@@ -12,7 +12,7 @@ var jwtKey = []byte("your_jwt_secret")
 var refreshSecret = []byte("your-refresh-secret-key")
 
 type Claims struct {
-	UserID string`json:"user_id"`
+	UserID string `json:"user_id"`
 	jwt.StandardClaims
 }
 

@@ -18,7 +18,7 @@ import (
 // load env
 
 func UploadUserImage(c *gin.Context) {
-	userID:= c.Param("userID")
+	userID := c.Param("userID")
 
 	if userID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -78,7 +78,6 @@ func UploadUserImage(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Image uploaded successfully", "url": imageURL})
 }
-
 
 func UploadEventoImage(c *gin.Context) {
 	eventoID := c.Param("eventoID")
