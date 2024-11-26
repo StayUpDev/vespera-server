@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"vespera-server/database"
 	"vespera-server/models"
+	"vespera-server/services"
 	"vespera-server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -85,7 +86,26 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "login successful", "data": token})
+	c.JSON(http.StatusOK, gin.H{"message": "login successful", "token": token, "data": user})
+}
+
+func GetUserByID(c *gin.Context) {
+
+	userID, exists := c.GetQuery("userID")
+	
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userID is required"})
+		return
+	}
+	
+	fmt.Printf("ID: %s\n", userID)
+	
+	user, err := services.GetUserByID(database.DB, userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": user, "message": "user found"})
 }
 
 func Protected(c *gin.Context) {

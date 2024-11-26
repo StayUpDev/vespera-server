@@ -1,13 +1,14 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 	"vespera-server/database"
 	"vespera-server/models"
 	"vespera-server/services"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func GetAllEventsHandler(c *gin.Context) {
@@ -23,24 +24,40 @@ func GetAllEventsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"events": events})
 }
 func GetEventsByUserIDHandler(c *gin.Context) {
-	userID := c.Param("userID")
 
+
+	userID, exists := c.GetQuery("userID")
+	
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userID is required"})
+		return
+	}
+	log.Printf("userID: %s", userID)
 	events, err := services.GetEventsByUserID(database.DB, userID)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve events"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"events": events})
+
+	c.JSON(http.StatusOK, gin.H{"data": events, "message": "Events found successfully"})
 }
+
 func GetEventByIDHandler(c *gin.Context) {
 	id := c.Param("id")
 
-	event, err := services.GetEventByID(database.DB, id)
+	idInt, err := strconv.Atoi(id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "invalid request payload"})
+	}
+
+	event, err := services.GetEventByID(database.DB, uint(idInt))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"event": event})
+	c.JSON(http.StatusOK, gin.H{"data": event, "message": "Event found successfully"})
 }
 func CreateEventHandler(c *gin.Context) {
 	var event models.Evento
@@ -55,9 +72,8 @@ func CreateEventHandler(c *gin.Context) {
 		return
 	}
 
-	event.ID = uuid.New().String()
 
-	c.JSON(http.StatusCreated, gin.H{"event": event})
+	c.JSON(http.StatusCreated, gin.H{"message":"event successfully created", "data": event})
 }
 
 func UpdateEventHandler(c *gin.Context) {
@@ -75,7 +91,13 @@ func UpdateEventHandler(c *gin.Context) {
 func DeleteEventHandler(c *gin.Context) {
 	id := c.Param("id")
 
-	if err := services.DeleteEventByID(database.DB, id); err != nil {
+	idInt, err := strconv.Atoi(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+	}
+
+	if err := services.DeleteEventByID(database.DB, uint(idInt)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete event"})
 		return
 	}
@@ -95,8 +117,8 @@ func DeleteEventsByUserIDHandler(c *gin.Context) {
 // AddLikeHandler handles the request to like an event
 func AddLikeHandler(c *gin.Context) {
 	var input struct {
-		UserID   string `json:"userID" binding:"required"`
-		EventoID string `json:"eventoID" binding:"required"`
+		UserID   uint `json:"userID" binding:"required"`
+		EventoID uint `json:"eventoID" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -115,8 +137,8 @@ func AddLikeHandler(c *gin.Context) {
 // RemoveLikeHandler handles the request to remove a like from an event
 func RemoveLikeHandler(c *gin.Context) {
 	var input struct {
-		UserID   string `json:"userID" binding:"required"`
-		EventoID string `json:"eventoID" binding:"required"`
+		UserID   uint `json:"userID" binding:"required"`
+		EventoID uint `json:"eventoID" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -136,7 +158,13 @@ func RemoveLikeHandler(c *gin.Context) {
 func GetLikesHandler(c *gin.Context) {
 	eventoID := c.Param("eventoID")
 
-	evento, err := services.GetEventByID(database.DB, eventoID)
+	eventoIDInt, err := strconv.Atoi(eventoID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid request"})
+	}
+
+	evento, err := services.GetEventByID(database.DB, uint(eventoIDInt))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch event with likes"})
 		return

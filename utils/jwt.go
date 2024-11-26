@@ -12,11 +12,11 @@ var jwtKey = []byte("your_jwt_secret")
 var refreshSecret = []byte("your-refresh-secret-key")
 
 type Claims struct {
-	UserID string `json:"user_id"`
+	UserID uint`json:"user_id"`
 	jwt.StandardClaims
 }
 
-func GenerateJWT(userID string) (string, error) {
+func GenerateJWT(userID uint) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserID: userID,
@@ -30,20 +30,20 @@ func GenerateJWT(userID string) (string, error) {
 	return token.SignedString(jwtKey)
 }
 
-func ValidateJWT(tokenString string) (string, error) {
+func ValidateJWT(tokenString string) (uint, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims.UserID, nil
 	}
 
-	return "", errors.New("invalid token")
+	return 0, errors.New("invalid token")
 }
 
 func CreateRefreshToken(user models.User) (string, error) {

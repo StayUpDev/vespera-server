@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 	"vespera-server/bucket"
 	"vespera-server/database"
@@ -82,11 +83,12 @@ func UploadUserImage(c *gin.Context) {
 func UploadEventoImage(c *gin.Context) {
 	eventoID := c.Param("eventoID")
 
-	if eventoID == "" {
+	eventoIDInt,err := strconv.Atoi(eventoID)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-
 	file, header, err := c.Request.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read image file"})
@@ -122,7 +124,7 @@ func UploadEventoImage(c *gin.Context) {
 
 	imageURL := fmt.Sprintf("http://localhost:9000/%s/%s", bucket.S3Bucket.Name, fileName)
 
-	err = services.AddEventoImage(database.DB, eventoID, imageURL)
+	err = services.AddEventoImage(database.DB, uint(eventoIDInt), imageURL)
 
 	if err != nil {
 

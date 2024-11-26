@@ -1,15 +1,14 @@
 package models
 
 import (
-	"time"
+	"gorm.io/gorm"
 )
 
 type EventoLike struct {
-	ID        string    `gorm:"primaryKey;type:varchar(36);not null" json:"$id"`
-	UserID    string    `gorm:"type:varchar(36);not null" json:"userID"`
-	EventoID  string    `gorm:"type:varchar(36);not null" json:"eventoID"`
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
+	gorm.Model
+	UserID    uint `gorm:"type:varchar(36);not null" json:"userID"`
+	EventoID  uint		`gorm:"type:varchar(36);not null" json:"eventoID"`
+
 }
 
 func (EventoLike) TableName() string {

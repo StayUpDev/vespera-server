@@ -32,6 +32,7 @@ func main() {
 
 	r.POST("/api/users/create", handlers.Register)
 	r.POST("/api/users/validate", handlers.Login)
+	r.GET("/api/users", handlers.GetUserByID)
 
 	r.POST("/api/events/create", handlers.CreateEventHandler)
 	r.GET("/api/events/all", handlers.GetAllEventsHandler)
