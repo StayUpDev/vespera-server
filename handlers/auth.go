@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte("your_jwt_secret")
+var jwtSecret = []byte("jwt_secret")
 
 func Register(c *gin.Context) {
 	var input struct {
@@ -92,20 +92,21 @@ func Login(c *gin.Context) {
 func GetUserByID(c *gin.Context) {
 
 	userID, exists := c.GetQuery("userID")
-	
+
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userID is required"})
 		return
 	}
-	
+
 	fmt.Printf("ID: %s\n", userID)
-	
+
 	user, err := services.GetUserByID(database.DB, userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": user, "message": "user found"})
+
 }
 
 func Protected(c *gin.Context) {
