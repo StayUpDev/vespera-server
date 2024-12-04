@@ -1,13 +1,11 @@
 package main
 
 import (
-	"log"
 	"vespera-server/bucket"
 	"vespera-server/database"
 	"vespera-server/handlers"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 type User struct {
@@ -18,12 +16,6 @@ type User struct {
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-
-	log.Println("Loaded environment variables")
 
 	database.Connect()
 	bucket.Setup()

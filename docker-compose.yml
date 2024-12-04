@@ -37,15 +37,20 @@ services:
     depends_on:
       - postgres
       - minio
+
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: vespera
-      MINIO_HOST: minio
+      DB_HOST: postgres
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: vespera
+      DB_PORT: 5432 
+      DB_SSLMODE: disable 
+      BUCKET_PORT: 9000
+      BUCKET_NAME: vespera-images
+      MINIO_HOST: vespera-minio 
       MINIO_ACCESS_KEY: admin
       MINIO_SECRET_KEY: password
-
+      MINIO_PORT: 9000
 volumes:
   postgres_data:
     driver: local

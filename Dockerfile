@@ -10,7 +10,7 @@ COPY . .
 
 RUN go build -o main .
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 WORKDIR /app
 

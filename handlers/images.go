@@ -16,7 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// load env
 
 func UploadUserImage(c *gin.Context) {
 	userID, isOk := c.GetQuery("userID")
