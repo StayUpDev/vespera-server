@@ -26,6 +26,26 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
 
+  golang-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vespera-app
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - minio
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: vespera
+      MINIO_HOST: minio
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: password
+
 volumes:
   postgres_data:
     driver: local

@@ -21,17 +21,17 @@ func GetAllEventsHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve events"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"events": events})
+  c.JSON(http.StatusOK, gin.H{"data": events, "message":"successfully retreived all events"})
 }
+
 func GetEventsByUserIDHandler(c *gin.Context) {
-
-
 	userID, exists := c.GetQuery("userID")
 	
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userID is required"})
 		return
 	}
+
 	log.Printf("userID: %s", userID)
 	events, err := services.GetEventsByUserID(database.DB, userID)
 

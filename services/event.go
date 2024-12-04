@@ -120,6 +120,8 @@ func AddEventoImage(db *gorm.DB, eventoID uint, imageURL string) error {
 
 	}
 
+  fmt.Printf("Creating evento with url %s and id %d", imageURL, eventoID)
+
 	if err := db.Create(&eventoImage).Error; err != nil {
 		return err
 	}

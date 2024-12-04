@@ -19,7 +19,11 @@ import (
 // load env
 
 func UploadUserImage(c *gin.Context) {
-	userID := c.Param("userID")
+	userID, isOk := c.GetQuery("userID")
+
+  if isOk == false {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+  }
 
 	if userID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -81,8 +85,12 @@ func UploadUserImage(c *gin.Context) {
 }
 
 func UploadEventoImage(c *gin.Context) {
-	eventoID := c.Param("eventoID")
+	eventoID, isValid := c.GetQuery("eventoID")
 
+
+  if !isValid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+  }
 	eventoIDInt,err := strconv.Atoi(eventoID)
 
 	if err != nil {
@@ -126,7 +134,10 @@ func UploadEventoImage(c *gin.Context) {
 
 	err = services.AddEventoImage(database.DB, uint(eventoIDInt), imageURL)
 
+  log.Printf("error in adding evento image service %v", err);
+
 	if err != nil {
+
 
 		log.Printf("Failed to add image to database: %v\n", err)
 		// Delete the image from the bucket
@@ -134,9 +145,9 @@ func UploadEventoImage(c *gin.Context) {
 
 		if err != nil {
 			log.Printf("Failed to delete image from bucket: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add image to database"})
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add image to database"})
 		return
 	}
 
