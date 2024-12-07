@@ -20,7 +20,6 @@
 *.tgz
 *.tar.gz
 
-/go.sum
 /gopath/
 
 
