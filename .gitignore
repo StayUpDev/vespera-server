@@ -21,7 +21,6 @@
 *.tar.gz
 
 /go.sum
-/go.mod
 /gopath/
 
 
